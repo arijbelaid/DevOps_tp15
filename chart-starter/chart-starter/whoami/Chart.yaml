@@ -1,0 +1,6 @@
+apiVersion: v2
+name: whoami
+description: Chart du TP15 pour l'application de démonstration whoami
+type: application
+version: 0.1.0 # version du CHART (à incrémenter à chaque modification du chart)
+appVersion: "v1.10.0" # version de l'APPLICATION déployée (tag d'image par défaut)

@@ -1,0 +1,8 @@
+Release {{ .Release.Name }} installée (révision {{ .Release.Revision }}).
+
+{{- if .Values.ingress.enabled }}
+Application : http://{{ .Values.ingress.host }}
+{{- else }}
+kubectl -n {{ .Release.Namespace }} port-forward svc/{{ include "whoami.fullname" . }} 8080:{{ .Values.service.port }}
+puis : curl http://localhost:8080
+{{- end }}

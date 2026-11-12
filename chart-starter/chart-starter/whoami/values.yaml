@@ -1,0 +1,27 @@
+# Valeurs par défaut du chart. Surchargées par -f values-<env>.yaml ou --set.
+replicaCount: 1
+
+image:
+  repository: traefik/whoami
+  tag: "" # vide = .Chart.AppVersion
+  pullPolicy: IfNotPresent
+
+containerPort: 8080
+
+service:
+  type: ClusterIP
+  port: 80
+
+ingress:
+  enabled: false
+  className: traefik
+  host: whoami.lab.local
+
+resources:
+  requests:
+    cpu: 50m
+    memory: 32Mi
+  limits:
+    memory: 64Mi
+
+# TODO (partie 2) : ajouter env (map nom → valeur) injectée dans le conteneur
