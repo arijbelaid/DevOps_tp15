@@ -21,7 +21,7 @@ Ce dépôt contient le travail réalisé lors du TP15. L'objectif était de pack
 
 ### 🛠️ Installation de Helm
 **Installation de Helm via le script officiel et vérification de la version (`helm version`) :**
-![Helm Installation](screenshots/00_helm-installation.png)
+![Helm Installation](screenshots/helm-public-chart.png)
 
 ---
 
