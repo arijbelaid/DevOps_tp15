@@ -1,48 +1,93 @@
-# TP15 : Packager une application Kubernetes (Helm & Kustomize)
+# ☸️ TP15 : Packager une application Kubernetes avec Helm et Kustomize
 
-Ce dépôt contient le travail du TP15 visant à packager et déployer une application Kubernetes sur un cluster K3s (du TP14) en utilisant deux approches : **Helm** et **Kustomize**.
+![Helm](https://img.shields.io/badge/Helm-0F1689?style=for-the-badge&logo=helm&logoColor=white)
+![Kustomize](https://img.shields.io/badge/Kustomize-326CE5?style=for-the-badge&logo=kubernetes&logoColor=white)
+![Kubernetes](https://img.shields.io/badge/kubernetes-%23326ce5.svg?style=for-the-badge&logo=kubernetes&logoColor=white)
 
-## 🎯 Objectifs
-- Consommer un chart public (podinfo).
-- Écrire et structurer un chart Helm complet (templates, values, helpers).
-- Gérer le cycle de vie d'une release (install, upgrade, rollback, uninstall).
-- Structurer Kustomize avec une base et des overlays (dev, staging, prod).
-- Comparer les deux outils et comprendre quand utiliser l'un ou l'autre.
+## 📝 Présentation du projet
+Ce dépôt contient le travail réalisé lors du TP15. L'objectif était de packager et déployer une application Kubernetes (whoami) en utilisant deux approches distinctes : **Helm** (gestionnaire de paquets basé sur des templates) et **Kustomize** (outil de patch basé sur des overlays, intégré à `kubectl`).
 
-## 📂 Structure du projet
-- `chart-starter/` : Contient le chart Helm `whoami` complété (templates et TODO résolus).
-- `kustomize-starter/` : Contient la base commune et les overlays (dev, staging, prod).
-- `values-dev.yaml` / `values-prod.yaml` : Fichiers de surcharge pour Helm.
+👉 **[📄 Cliquez ici pour télécharger le rapport complet (rapport_tp15.pdf)](rapport_tp15.pdf)**
 
-## 🚀 Prérequis
-- Un cluster K3s fonctionnel (issu du TP14).
-- `kubectl` configuré.
-- `helm` installé.
+## 📂 Structure du Dépôt
+- 📁 `chart-starter/` : Le chart Helm personnalisé (avec les templates complétés).
+- 📁 `kustomize-starter/` : La base commune et les overlays (dev, staging, prod).
+- 📄 `values-dev.yaml` & `values-prod.yaml` : Fichiers de surcharge Helm.
+- 📁 `screenshots/` : Preuves visuelles de validation du TP.
 
-## 🛠️ Ce qui a été réalisé
+---
 
-### Partie 1 & 2 : Helm (Chart Custom)
-- Étude d'un chart public (`podinfo`).
-- Complétion des TODO du chart `whoami` : boucle `range` sur les env, `readinessProbe`, Service paramétré et Ingress conditionnel (`if ingress.enabled`).
-- Validation avec `helm lint` et `helm template`.
+## 🚀 Validation des étapes (Livrables)
 
-### Partie 3 : Cycle de vie Helm
-- Création d'environnements distincts via `values-dev.yaml` et `values-prod.yaml`.
-- Simulation d'un échec de déploiement (image inexistante) pour tester les commandes `helm history` et `helm rollback`.
-- Test de l'option `--atomic` (qui annule automatiquement un upgrade échoué).
+### 🛠️ Installation de Helm
+**Installation de Helm via le script officiel et vérification de la version (`helm version`) :**
+![Helm Installation](screenshots/helm-installation.png)
 
-### Partie 4 : Kustomize
-- Prévisualisation de la base et de l'overlay `dev` fournis.
-- Création des overlays `staging` et `prod` avec des patches spécifiques (modification de la mémoire, ajout de `readinessProbe`, changement de tag d'image).
-- Observation de la génération des ConfigMaps avec suffixe de hash (déclenchant des rolling updates automatiques).
+---
 
-## 📸 Livrables
-Les captures d'écran de validation sont disponibles dans le dossier `captures/` (si applicable) :
-- `helm-lint-template.png`
-- `helm-history.png`
-- `helm-atomic.png`
-- `kustomize-envs.png`
-- `kustomize-diff.png`
+### 🟢 Partie 1 : Consommer un chart public
+**Installation et inspection du chart public Podinfo (`helm install`, `helm list`) :**
+![Helm Public Chart](screenshots/helm-public-chart.png)
+![Helm Public Chart](screenshots/helm-public-chart2.png)
 
-## ⚠️ Sécurité
-Aucun secret ou identifiant n'est versionné dans ce dépôt.
+---
+
+### 🟢 Partie 2 : Validation du chart Helm
+**Vérification de la syntaxe (`helm lint`) et génération des manifestes (`helm template`) :**
+![Helm Lint Template](screenshots/helm-lint-template.png)
+
+---
+
+### 🟢 Partie 3 : Cycle de vie d'une release Helm
+**Historique des déploiements (Upgrade, échec avec l'image v9.9.9 et Rollback vers la révision 2) :**
+![Helm History](screenshots/helm-history.png)
+
+**Test de l'option `--atomic` : Helm annule automatiquement le déploiement suite à l'échec :**
+![Helm Atomic](screenshots/helm-atomic.png)
+
+---
+
+### 🟢 Partie 4 : Kustomize (Base et Overlays)
+**Déploiement des trois environnements (dev, staging, prod) avec des replicas différents :**
+![Kustomize Envs](screenshots/kustomize-envs.png)
+
+**Comparaison des manifestes générés (`diff`) entre l'environnement de staging et de production :**
+![Kustomize Diff](screenshots/kustomize-diff.png)
+
+*(Note : Le `diff` montre les changements de replicas (2 vs 3), de tag d'image (v1.10.0 vs v1.10.1), de limite mémoire (64Mi vs 128Mi) et l'ajout de la readinessProbe en production).*
+
+---
+
+## 📊 Partie 5 : Comparaison Helm vs Kustomize
+
+| Critère | Helm | Kustomize |
+| :--- | :--- | :--- |
+| **Mécanisme (template / patch)** | Template (Go templates) | Patch (Overlays sur une base commune) |
+| **Gestion des releases et rollback** | Oui, natif (historique, `helm rollback`) | Non (dépend de Git ou d'ArgoCD pour l'historique) |
+| **Distribution d’un logiciel à des tiers** | Excellent (charts packagés `.tgz`) | Moyen (nécessite de partager les fichiers sources) |
+| **Lisibilité du YAML final** | Moyenne (beaucoup de `{{ }}` et d'indentations) | Excellente (YAML pur généré) |
+| **Intégré à kubectl** | Non (nécessite le binaire `helm`) | Oui (`kubectl apply -k`) |
+| **Support par Argo CD** | Oui | Oui |
+
+**Quand utiliser les deux ensemble ?**
+> On utilise généralement **Helm** pour déployer des applications tierces complexes (comme Prometheus, Traefik, ou des bases de données) et **Kustomize** par-dessus pour appliquer des patches spécifiques à notre infrastructure (ex: ajouter des annotations, modifier des limites de ressources, ou changer le type de stockage), sans avoir à forker le chart Helm d'origine. 
+> Techniquement, Kustomize permet d'intégrer un chart Helm directement dans un `kustomization.yaml` en utilisant le champ `helmCharts:`, ce qui combine le meilleur des deux mondes.
+
+---
+
+## 🧠 Réponses aux questions théoriques
+
+**1. Où Helm stocke-t-il l'historique d'une release ?**
+> Helm stocke l'historique dans des **Secrets Kubernetes** (type `helm.sh/release.v1`) dans le namespace de la release. Chaque révision est un secret séparé (ex: `sh.helm.release.v1.demo.v1`), ce qui permet de faire des rollbacks.
+
+**2. Que fait l'option `--atomic` lors d'un `helm upgrade` ?**
+> Si le déploiement échoue (ex: image inexistante), Helm attend le timeout défini (`--timeout 60s`) et effectue automatiquement un **rollback** vers la dernière version fonctionnelle, évitant ainsi de laisser l'application dans un état instable.
+
+**3. Pourquoi les Pods sont-ils automatiquement recréés quand on modifie une ConfigMap avec Kustomize ?**
+> Kustomize utilise `configMapGenerator`. À chaque modification d'une valeur (ex: `LOG_LEVEL`), Kustomize génère un **nouveau nom** pour la ConfigMap (avec un suffixe de hash). Le Deployment détecte ce changement de nom et déclenche automatiquement un `RollingUpdate`.
+
+---
+
+## 🔒 Sécurité et Bonnes Pratiques
+- Les fichiers `.tgz` générés par `helm package` sont ignorés via le `.gitignore`.
+- Aucun secret (mot de passe, token) n'est présent en clair dans les fichiers de configuration.
