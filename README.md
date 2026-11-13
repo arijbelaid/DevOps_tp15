@@ -19,6 +19,12 @@ Ce dépôt contient le travail réalisé lors du TP15. L'objectif était de pack
 
 ## 🚀 Validation des étapes (Livrables)
 
+### 🛠️ Installation de Helm
+**Installation de Helm via le script officiel et vérification de la version (`helm version`) :**
+![Helm Installation](screenshots/00_helm-installation.png)
+
+---
+
 ### 🟢 Partie 1 : Consommer un chart public
 **Installation et inspection du chart public Podinfo (`helm install`, `helm list`) :**
 ![Helm Public Chart 1](screenshots/01_helm-public-chart.png)
