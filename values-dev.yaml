@@ -1,0 +1,8 @@
+replicaCount: 1
+ingress:
+  enabled: true
+  host: whoami.lab.local
+env:
+  - name: WHOAMI_NAME
+    value: dev
+

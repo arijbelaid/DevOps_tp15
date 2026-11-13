@@ -18,11 +18,22 @@ spec:
         - name: {{ .Chart.Name }}
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag | default .Chart.AppVersion }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
-          args: ["--port", "{{ .Values.containerPort }}"]
           ports:
             - name: http
-              containerPort: {{ .Values.containerPort }}
-          # TODO (partie 2) : boucle range sur .Values.env pour générer la liste env:
-          # TODO (partie 2) : readinessProbe / livenessProbe sur /health (port http)
+              containerPort: 8080
+              protocol: TCP
+          env:
+            {{- range .Values.env }}
+            - name: {{ .name }}
+              value: {{ .value | quote }}
+            {{- end }}
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
           resources:
             {{- toYaml .Values.resources | nindent 12 }}

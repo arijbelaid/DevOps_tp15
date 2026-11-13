@@ -1,2 +1,0 @@
-# TODO (partie 2) : Service dont le nom, les labels, le type et le port viennent des helpers et de .Values.service,
-#                   avec un selector utilisant "whoami.selectorLabels" et targetPort: http

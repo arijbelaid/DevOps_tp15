@@ -1,4 +1,0 @@
-{{- if .Values.ingress.enabled }}
-# TODO (partie 2) : Ingress (ingressClassName, host) vers le Service du chart,
-#                   généré uniquement si ingress.enabled vaut true
-{{- end }}
